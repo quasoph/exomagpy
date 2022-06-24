@@ -97,11 +97,3 @@ def predictExo(filename):
         plt.xlabel("Exoplanet detected!",fontsize=30)
     elif val == 0:
         plt.xlabel("No exoplanet detected.",fontsize=30)
-
-
-
-# save plot as img
-
-# neural network to classify img
-
-# function to take in and classify (user-input) test data
