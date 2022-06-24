@@ -100,3 +100,4 @@ def predictExo(filename):
         plt.xlabel("No exoplanet detected.",fontsize=30)
 
 predictExo(test_df)
+predictExo(test_df)
