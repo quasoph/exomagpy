@@ -1,3 +1,5 @@
+# IMPORTS
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -10,8 +12,9 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing import image
 
-train_df_true = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has exoplanets
+# FETCH DATA
 
+train_df_true = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has exoplanets
 train_df_false = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has no exoplanets
 
 test_df = input("Enter your data: ")
@@ -22,16 +25,25 @@ ls_imgs_false = []
 for x in train_df_true:
     # plot data with lightkurve
     # save as image
-    # append image to list
+    # export to folder
     x=2
 
 for y in train_df_false:
     # plot data with lightkurve
     # save as image
-    # append image to list
+    # export to folder
     y=2 # just needed a space filler here
 
-# export as images in folders
+for z in test_df:
+    # plot data with lightkurve
+    # save as image
+    # export to folder
+    z=2 # just needed a space filler here
+
+# EXPORT LIGHTKURVE GRAPHS AS IMAGES IN 2 FOLDERS (EXOPLANETS AND NO EXOPLANETS) IN A LARGER SHARED FOLDER
+# CREATE LIGHTKURVE GRAPHS FOR TEST_DF AND EXPORT TO A "TEST" FOLDER
+
+# CREATE TRAIN AND TEST DATASETS
 
 train = ImageDataGenerator(rescale=1/255)
 test = ImageDataGenerator(rescale=1/255)
@@ -47,7 +59,6 @@ test_ds = test.flow_from_directory(
     target_size=(150,150),
     batch_size = 32,
     class_mode = 'binary')
-
 
 # BUILD CNN MODEL
 
