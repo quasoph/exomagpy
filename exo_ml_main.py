@@ -11,6 +11,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing import image
 
 train_df_true = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has exoplanets
+
 train_df_false = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has no exoplanets
 
 test_df = input("Enter your data: ")
