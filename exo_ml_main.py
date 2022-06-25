@@ -20,27 +20,27 @@ train_df_false = lk.search_lightcurve("Trappist-1",radius=180.,campaign=12,expti
 lc_exo = train_df_true.download()
 lc_no_exo = train_df_false.download()
 
-test_df = input("Enter your target: ")
-test_df1 = input("Enter mission: ")
-testsearch = lk.search_lighcurve(str(test_df),author=str(test_df1))
+test_df = str(input("Enter your target: "))
+test_df1 = str(input("Enter mission: "))
+testsearch = lk.search_lightcurve(test_df,author=test_df1)
 lc_test = testsearch.download()
 
 ls_imgs_true = []
 ls_imgs_false = []
 
 for x in lc_exo:
-    lc_exo.plot();
-    # save as image
+    plt.plot(x)
+    plt.savefig("Lightcurve_Exo_" + str(lc_exo.index(x)) + ".png")
     # export to folder
 
 for y in lc_no_exo:
-    lc_no_exo.plot();
-    # save as image
+    plt.plot(y)
+    plt.savefig("Lightcurve_No_Exo_" + str(lc_no_exo.index(y)) + ".png")
     # export to folder
 
 for z in lc_test:
-    lc_test.plot();
-    # save as image
+    plt.plot(z)
+    plt.savefig("Lightcurve_Test_" + str(lc_test.index(z)) + ".png")
     # export to folder
 
 # EXPORT LIGHTKURVE GRAPHS AS IMAGES IN 2 FOLDERS (EXOPLANETS AND NO EXOPLANETS) IN A LARGER SHARED FOLDER
@@ -113,5 +113,4 @@ def predictExo(filename):
     elif val == 0:
         plt.xlabel("No exoplanet detected.",fontsize=30)
 
-predictExo(test_df)
-predictExo(test_df)
+predictExo(lc_test)
