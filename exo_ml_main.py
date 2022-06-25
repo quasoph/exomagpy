@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
-import lightkurve
+import lightkurve as lk
 
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -14,31 +14,34 @@ from tensorflow.keras.preprocessing import image
 
 # FETCH DATA
 
-train_df_true = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has exoplanets
-train_df_false = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has no exoplanets
+train_df_true = lk.search_lightcurve("Trappist-1",radius=180.,campaign=12,exptime=1800) # has exoplanets
+train_df_false = lk.search_lightcurve("Trappist-1",radius=180.,campaign=12,exptime=1800) # has no exoplanets
 
-test_df = input("Enter your data: ")
+lc_exo = train_df_true.download()
+lc_no_exo = train_df_false.download()
+
+test_df = input("Enter your target: ")
+test_df1 = input("Enter mission: ")
+testsearch = lk.search_lighcurve(str(test_df),author=str(test_df1))
+lc_test = testsearch.download()
 
 ls_imgs_true = []
 ls_imgs_false = []
 
-for x in train_df_true:
-    # plot data with lightkurve
+for x in lc_exo:
+    lc_exo.plot();
     # save as image
     # export to folder
-    x=2
 
-for y in train_df_false:
-    # plot data with lightkurve
+for y in lc_no_exo:
+    lc_no_exo.plot();
     # save as image
     # export to folder
-    y=2 # just needed a space filler here
 
-for z in test_df:
-    # plot data with lightkurve
+for z in lc_test:
+    lc_test.plot();
     # save as image
     # export to folder
-    z=2 # just needed a space filler here
 
 # EXPORT LIGHTKURVE GRAPHS AS IMAGES IN 2 FOLDERS (EXOPLANETS AND NO EXOPLANETS) IN A LARGER SHARED FOLDER
 # CREATE LIGHTKURVE GRAPHS FOR TEST_DF AND EXPORT TO A "TEST" FOLDER
