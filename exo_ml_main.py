@@ -28,20 +28,23 @@ lc_test = testsearch.download()
 ls_imgs_true = []
 ls_imgs_false = []
 
-for x in lc_exo:
-    plt.plot(x)
-    plt.savefig("Lightcurve_Exo_" + str(lc_exo.index(x)) + ".png")
+#for x in lc_exo:
+    #plt.plot(x)
+    #plt.savefig("Lightcurve_Exo_" + str(lc_exo.index(x)) + ".png")
     # export to folder
 
-for y in lc_no_exo:
-    plt.plot(y)
-    plt.savefig("Lightcurve_No_Exo_" + str(lc_no_exo.index(y)) + ".png")
+#for y in lc_no_exo:
+    #plt.plot(y)
+    #plt.savefig("Lightcurve_No_Exo_" + str(lc_no_exo.index(y)) + ".png")
     # export to folder
 
-for z in lc_test:
-    plt.plot(z)
-    plt.savefig("Lightcurve_Test_" + str(lc_test.index(z)) + ".png")
+#for z in lc_test:
+    #plt.plot(z)
+    #plt.savefig("Lightcurve_Test_" + str(lc_test.index(z)) + ".png")
     # export to folder
+
+lc_exo.plot()
+plt.show()
 
 # EXPORT LIGHTKURVE GRAPHS AS IMAGES IN 2 FOLDERS (EXOPLANETS AND NO EXOPLANETS) IN A LARGER SHARED FOLDER
 # CREATE LIGHTKURVE GRAPHS FOR TEST_DF AND EXPORT TO A "TEST" FOLDER
