@@ -1,8 +1,10 @@
+# IMPORTS
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
-import lightkurve
+import lightkurve as lk
 
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -10,28 +12,44 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing import image
 
-train_df_true = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has exoplanets
+# FETCH DATA
 
-train_df_false = pd.read_table(r"C:\Users\ItIsO\Documents\GitHub\AMATEUR_exoplanet_data\UID_0013192_data_AXA_002.tbl") # has no exoplanets
+train_df_true = lk.search_lightcurve("Trappist-1",radius=180.,campaign=12,exptime=1800) # has exoplanets
+train_df_false = lk.search_lightcurve("Trappist-1",radius=180.,campaign=12,exptime=1800) # has no exoplanets
 
-test_df = input("Enter your data: ")
+lc_exo = train_df_true.download()
+lc_no_exo = train_df_false.download()
+
+test_df = str(input("Enter your target: "))
+test_df1 = str(input("Enter mission: "))
+testsearch = lk.search_lightcurve(test_df,author=test_df1)
+lc_test = testsearch.download()
 
 ls_imgs_true = []
 ls_imgs_false = []
 
-for x in train_df_true:
-    # plot data with lightkurve
-    # save as image
-    # append image to list
-    x=2
+#for x in lc_exo:
+    #plt.plot(x)
+    #plt.savefig("Lightcurve_Exo_" + str(lc_exo.index(x)) + ".png")
+    # export to folder
 
-for y in train_df_false:
-    # plot data with lightkurve
-    # save as image
-    # append image to list
-    y=2 # just needed a space filler here
+#for y in lc_no_exo:
+    #plt.plot(y)
+    #plt.savefig("Lightcurve_No_Exo_" + str(lc_no_exo.index(y)) + ".png")
+    # export to folder
 
-# export as images in folders
+#for z in lc_test:
+    #plt.plot(z)
+    #plt.savefig("Lightcurve_Test_" + str(lc_test.index(z)) + ".png")
+    # export to folder
+
+lc_exo.plot()
+plt.show()
+
+# EXPORT LIGHTKURVE GRAPHS AS IMAGES IN 2 FOLDERS (EXOPLANETS AND NO EXOPLANETS) IN A LARGER SHARED FOLDER
+# CREATE LIGHTKURVE GRAPHS FOR TEST_DF AND EXPORT TO A "TEST" FOLDER
+
+# CREATE TRAIN AND TEST DATASETS
 
 train = ImageDataGenerator(rescale=1/255)
 test = ImageDataGenerator(rescale=1/255)
@@ -47,7 +65,6 @@ test_ds = test.flow_from_directory(
     target_size=(150,150),
     batch_size = 32,
     class_mode = 'binary')
-
 
 # BUILD CNN MODEL
 
@@ -99,5 +116,4 @@ def predictExo(filename):
     elif val == 0:
         plt.xlabel("No exoplanet detected.",fontsize=30)
 
-predictExo(test_df)
-predictExo(test_df)
+predictExo(lc_test)
