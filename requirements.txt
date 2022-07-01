@@ -1,0 +1,7 @@
+numpy
+os
+matplotlib
+pandas
+tensorflow
+lightkurve
+astropy
