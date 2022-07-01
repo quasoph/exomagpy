@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
 import lightkurve as lk
+import io
 
 from tensorflow import keras
 from tensorflow.keras import layers
