@@ -1,5 +1,7 @@
-# exomagpy
 <img src="https://github.com/quasoph/exomagpy/blob/main/Exomagpy_logo.png?raw=true" height="250" width="250" >
+
+# exomagpy
+
 EXOplanet MAchine learninG PYthon.
 
 Pip-installable Python package for exoplanet detection using machine learning. Looks at shiny things!
