@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow
 import lightkurve as lk
+import cv2
+import io
+import warnings
+from sklearn.model_selection import train_test_split
+import sys
+
 
 from PIL import Image
 
@@ -15,117 +21,127 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing import image
 
-# PHASE AND BIN FUNCTION
+warnings.filterwarnings("ignore") # didnt work
+np.set_printoptions(threshold=sys.maxsize)
 
-def phase_and_bin(data,period,t0,bin_time):
-    data_phased = data.fold(period=period,epoch_time=t0)
-    data_binned = data_phased.bin(bin_time)
-    return data_binned
+# DOWNLOAD (& ADD TO BIG ARRAY)
 
-# CONVERT PLOT TO ARRAY FUNCTION
+def download(search):
 
-def plot_to_array(pltdata):
-
-    lc = pltdata.plot(linewidth=0,marker=".")
-    img = np.asarray(bytearray(lc.read()),dtype=np.uint8)
+    lc = search.download()
     
-    return img
+    if lc is not None:
+        
+        fig,ax = plt.subplots()
+        ax.scatter(lc.time.value.tolist(), lc.flux.value.tolist(), color='k')
+        ax.autoscale()
+        ax.set_xlabel('Time (BTJD)')
+        ax.set_ylabel('Flux')
+        fig.show()
+        io_buf = io.BytesIO()
+        fig.savefig(io_buf,format="raw")
+        io_buf.seek(0)
+        img_arr = np.frombuffer(io_buf.getvalue(),dtype=np.uint8)
+        io_buf.close()
+    
+        return img_arr
 
 # GET ARRAY OF IMAGE ARRAYS FOR A FILE
 
-def get_lightcurves(filename):
+def get_lightcurves(filename,length):
 
-    tbl = pd.read_csv(os.path.abspath(str(filename)),delimiter=",",comment="#")
-    TICs = tbl["tid"]
-
-    x = 0
-
-    imgarray = []
-
-    while x < len(TICs):
-        name = TICs[x]
-        try:
-            search = lk.search_lightcurve("TIC " + str(name),author="SPOC",sector=1)
-            lc = search.download()
-            array = plot_to_array(lc)
-            imgarray.append(array)
-        except:
-            search = lk.search_lightcurve("TIC " + str(name),author="TESS",sector=1)
-            lc = search.download()
-            array = plot_to_array(lc)
-            imgarray.append(array)
-        else:
-            print("No lightcurve found.")
+    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#")
     
-        x = x + 1
+    colnames = tbl.columns.values.tolist()
+    if "tid" in colnames:
+        TICs = tbl["tid"].astype(str)
+    elif "tic_id" in colnames:
+        TICs = tbl["tic_id"].astype(str).str[4:]
+    else:
+        print("No TIC ID column found.")
 
-        return imgarray
+    #print(np.shape(TICs))
+
+    pics = []
+
+    for x in range(0,length): # change upper bound as needed
+        name = TICs[x]
+        
+        search = lk.search_lightcurve(target=("TIC " + name),author="SPOC")
+        pic = download(search)
+        
+        if pic is not None:
+            pics.append(pic)
+    
+    shape = int(len(pics))
+
+    print("Shape is " + str(shape))
+        
+    return pics, shape
 
 # CREATE TRAIN AND TEST DATASETS
 
 def predictExo(exotrainfile,noexotrainfile,testfile):
 
-    train = ImageDataGenerator(rescale=1/255)
-    test = ImageDataGenerator(rescale=1/255)
-    batchsize = 7
+    exotraindata, trainshape = get_lightcurves(exotrainfile,200) # / 255 for the data
+    noexotraindata, train2shape = get_lightcurves(noexotrainfile,69)
 
-    train_ds = train.flow(
-        get_lightcurves(exotrainfile),
-        get_lightcurves(noexotrainfile),
-        target_size=(150,150),
-        batch_size = batchsize,
-        class_mode = 'binary')
+    exotraindata = np.asarray(exotraindata)
+    noexotraindata = np.asarray(noexotraindata)
 
-    test_ds = test.flow(
-        get_lightcurves(testfile),
-        target_size=(150,150),
-        batch_size = batchsize,
-        class_mode = 'binary')
+    print(exotraindata[0])
 
-    # BUILD CNN MODEL
+    print(np.shape(exotraindata))
 
-    model = keras.Sequential()
+    exolabels = np.ones(trainshape)
+    noexolabels = np.zeros(train2shape)
 
-    model.add(keras.layers.Conv2D(32,(3,3),activation="relu",input_shape=(150,150,3)))
-    model.add(keras.layers.MaxPool2D(2,2))
+    traindata = np.concatenate((exotraindata,noexotraindata))
+    trainlabels = np.concatenate((exolabels,noexolabels))
 
-    model.add(keras.layers.Conv2D(64,(3,3),activation="relu"))
-    model.add(keras.layers.MaxPool2D(2,2))
+    #train_exo, test_exo, train_labels, test_labels = train_test_split(traindata,trainlabels)
 
-    model.add(keras.layers.Conv2D(128,(3,3),activation="relu"))
-    model.add(keras.layers.MaxPool2D(2,2))
+    traindata = tensorflow.reshape(traindata,[trainshape+train2shape,1,1228800])
 
-    model.add(keras.layers.Conv2D(128,(3,3),activation="relu"))
-    model.add(keras.layers.MaxPool2D(2,2))
+    # NON-2D CNN MODEL
 
-    model.add(keras.layers.Flatten())
-
-    model.add(keras.layers.Dense(512,activation="relu"))
-
-    model.add(keras.layers.Dense(1,activation="sigmoid"))
+    model = keras.Sequential([
+        keras.layers.Flatten(input_shape=(1,1228800)),
+        keras.layers.Dense(16,activation="relu"),
+        keras.layers.Dense(16,activation="relu"),
+        keras.layers.Dense(1,activation="sigmoid")
+    ])
 
     model.compile(optimizer="adam",loss="binary_crossentropy",metrics=["accuracy"])
 
     # TRAIN DATA
 
     model.fit(
-        train_ds,
-        steps_per_epoch = 250,
-        epochs = 10,
-        validation_data = test_ds
+        traindata,
+        trainlabels,
+        batch_size = 8,
+        epochs = trainshape+train2shape,
     )
 
-    for y in testfile:
+    Y, testshape = get_lightcurves(testfile,10) # this returns an array of images!
+    Y = np.asarray(Y)
 
-        Y = get_lightcurves(testfile[y])
-        pic = Image.fromarray(Y)
-        pic.show()
-        X = np.expand_dims(Y,axis=0)
+    tble = pd.read_csv(os.path.abspath(testfile),delimiter=",",comment="#")
+    TICid = tble["tic_id"].astype(str)
+    
+    X = tensorflow.reshape(Y,[testshape,1,1228800])
+    probability = model.predict(X)
+    val = np.argmax(probability,axis=1).tolist()
+    
+    for x in range(0,len(val)):
+        
+        print(x)
+        print(val[x])
 
-        val = model.predict(X)
-        print(val)
+        if val[x] == 1:
+            print("Exoplanet detected!" + TICid[x])
+        elif val[x] == 0:
+            print("No exoplanet detected." + TICid[x])
 
-        if val == 1:
-            plt.xlabel("Exoplanet detected!",fontsize=30)
-        elif val == 0:
-            plt.xlabel("No exoplanet detected.",fontsize=30)
+
+predictExo("PS_2022.06.27_08.12.38.csv","TOI_2022.06.29_08.07.35.csv","PS_2022.07.04_02.32.20.csv")
