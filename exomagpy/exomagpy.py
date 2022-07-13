@@ -6,23 +6,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow
 import lightkurve as lk
-import cv2
 import io
 import warnings
-from sklearn.model_selection import train_test_split
-import sys
-
-
-from PIL import Image
 
 from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras import Sequential
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.preprocessing import image
 
-warnings.filterwarnings("ignore") # didnt work
-np.set_printoptions(threshold=sys.maxsize)
+warnings.filterwarnings("ignore")
 
 # DOWNLOAD (& ADD TO BIG ARRAY)
 
@@ -33,17 +22,17 @@ def download(search):
     if lc is not None:
         
         fig,ax = plt.subplots()
-        ax.scatter(lc.time.value.tolist(), lc.flux.value.tolist(), color='k')
+        ax.scatter(lc.time.value.tolist(), lc.flux.value.tolist(),s=0.1, color='k')
         ax.autoscale()
         ax.set_xlabel('Time (BTJD)')
         ax.set_ylabel('Flux')
-        fig.show()
+        plt.close(fig)
         io_buf = io.BytesIO()
         fig.savefig(io_buf,format="raw")
         io_buf.seek(0)
-        img_arr = np.frombuffer(io_buf.getvalue(),dtype=np.uint8)
+        img_arr = (np.frombuffer(io_buf.getvalue(),dtype=np.uint8)).reshape(288,-1)
         io_buf.close()
-    
+
         return img_arr
 
 # GET ARRAY OF IMAGE ARRAYS FOR A FILE
@@ -74,17 +63,15 @@ def get_lightcurves(filename,length):
             pics.append(pic)
     
     shape = int(len(pics))
-
-    print("Shape is " + str(shape))
         
     return pics, shape
 
 # CREATE TRAIN AND TEST DATASETS
 
-def predictExo(exotrainfile,noexotrainfile,testfile):
+def predictExo(exotrainfile,size1,no_exotrainfile,size2,testfile,testsize):
 
-    exotraindata, trainshape = get_lightcurves(exotrainfile,200) # / 255 for the data
-    noexotraindata, train2shape = get_lightcurves(noexotrainfile,69)
+    exotraindata, trainshape = get_lightcurves(exotrainfile,size1) # / 255 for the data
+    noexotraindata, train2shape = get_lightcurves(no_exotrainfile,size2)
 
     exotraindata = np.asarray(exotraindata)
     noexotraindata = np.asarray(noexotraindata)
@@ -99,14 +86,13 @@ def predictExo(exotrainfile,noexotrainfile,testfile):
     traindata = np.concatenate((exotraindata,noexotraindata))
     trainlabels = np.concatenate((exolabels,noexolabels))
 
-    #train_exo, test_exo, train_labels, test_labels = train_test_split(traindata,trainlabels)
-
-    traindata = tensorflow.reshape(traindata,[trainshape+train2shape,1,1228800])
+    print("Train data shape is " + str(np.shape(traindata)))
+    traindata = tensorflow.reshape(traindata,[trainshape+train2shape,1,288,1728])
 
     # NON-2D CNN MODEL
 
     model = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1,1228800)),
+        keras.layers.Flatten(input_shape=(1,288,1728)),
         keras.layers.Dense(16,activation="relu"),
         keras.layers.Dense(16,activation="relu"),
         keras.layers.Dense(1,activation="sigmoid")
@@ -123,25 +109,31 @@ def predictExo(exotrainfile,noexotrainfile,testfile):
         epochs = trainshape+train2shape,
     )
 
-    Y, testshape = get_lightcurves(testfile,10) # this returns an array of images!
+    Y, testshape = get_lightcurves(testfile,testsize) # this returns an array of images!
     Y = np.asarray(Y)
 
     tble = pd.read_csv(os.path.abspath(testfile),delimiter=",",comment="#")
     TICid = tble["tic_id"].astype(str)
+
+    col_names = tble.columns.values.tolist()
+    if "tid" in col_names:
+        TICid = tble["tid"].astype(str)
+    elif "tic_id" in col_names:
+        TICid = tble["tic_id"].astype(str)
+    else:
+        print("No TIC ID column found.")
     
-    X = tensorflow.reshape(Y,[testshape,1,1228800])
+    X = tensorflow.reshape(Y,[testshape,1,288,1728])
     probability = model.predict(X)
-    val = np.argmax(probability,axis=1).tolist()
+    val = np.round(probability).tolist()
     
     for x in range(0,len(val)):
         
-        print(x)
-        print(val[x])
+        fig, ax = plt.subplots()
+        ax.imshow(Y[x],aspect=4,cmap="gray")
+        plt.show()
 
-        if val[x] == 1:
-            print("Exoplanet detected!" + TICid[x])
-        elif val[x] == 0:
-            print("No exoplanet detected." + TICid[x])
-
-
-predictExo("PS_2022.06.27_08.12.38.csv","TOI_2022.06.29_08.07.35.csv","PS_2022.07.04_02.32.20.csv")
+        if val[x] == [1.0]:
+            print("Exoplanet candidate detected! ID: " + TICid[x])
+        elif val[x] == [0.0]:
+            print("No exoplanet detected. ID: " + TICid[x])
