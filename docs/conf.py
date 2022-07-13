@@ -17,9 +17,9 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'exo-ml'
-copyright = '2022, Sophie Frankel, Marcin Marculewicz'
-author = 'Sophie Frankel, Marcin Marculewicz'
+project = 'exomagpy'
+copyright = '2022, Sophie Frankel'
+author = 'Sophie Frankel'
 root_doc = 'index'
 
 # The full version, including alpha/beta/rc tags
