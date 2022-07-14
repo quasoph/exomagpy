@@ -11,6 +11,8 @@ Welcome to exomagpy's documentation!
    :caption: Contents:
 
    exo_ml.rst
+   get_lightcurves.rst
+   dfunc.rst
 
 
 Indices and tables
