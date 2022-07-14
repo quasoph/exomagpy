@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: exomagpy
-Version: 0.1
-Summary: EXOMAGPY - EXOplanet MAchine learninG PYthon. A python package to find exoplanets using a binary image classification neural network. Looks at shiny things!
+Version: 1.0.0
+Summary: EXOMAGPY - EXOplanet MAchine learninG PYthon. A python package to find exoplanet candidates using a binary classification neural network. Looks at shiny things!
 Home-page: https://github.com/quasoph/exomagpy
 Author: Sophie Frankel
 Author-email: s.frankel2@newcastle.ac.uk

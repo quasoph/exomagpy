@@ -1,5 +1,4 @@
 numpy
-os
 matplotlib
 pandas
 tensorflow
