@@ -1,0 +1,10 @@
+README.md
+setup.py
+exomagpy/__init__.py
+exomagpy/download.py
+exomagpy/get_lightcurves.py
+exomagpy/predictExo.py
+exomagpy.egg-info/PKG-INFO
+exomagpy.egg-info/SOURCES.txt
+exomagpy.egg-info/dependency_links.txt
+exomagpy.egg-info/top_level.txt
