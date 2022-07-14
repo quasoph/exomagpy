@@ -68,10 +68,10 @@ def get_lightcurves(filename,length):
 
 # CREATE TRAIN AND TEST DATASETS
 
-def predictExo(exotrainfile,size1,no_exotrainfile,size2,testfile,testsize):
+def predictExo(train1,size1,train2,size2,test,testsize):
 
-    exotraindata, trainshape = get_lightcurves(exotrainfile,size1) # / 255 for the data
-    noexotraindata, train2shape = get_lightcurves(no_exotrainfile,size2)
+    exotraindata, trainshape = get_lightcurves(train1,size1) # / 255 for the data
+    noexotraindata, train2shape = get_lightcurves(train2,size2)
 
     exotraindata = np.asarray(exotraindata)
     noexotraindata = np.asarray(noexotraindata)
@@ -109,10 +109,10 @@ def predictExo(exotrainfile,size1,no_exotrainfile,size2,testfile,testsize):
         epochs = trainshape+train2shape,
     )
 
-    Y, testshape = get_lightcurves(testfile,testsize) # this returns an array of images!
+    Y, testshape = get_lightcurves(test,testsize) # this returns an array of images!
     Y = np.asarray(Y)
 
-    tble = pd.read_csv(os.path.abspath(testfile),delimiter=",",comment="#")
+    tble = pd.read_csv(os.path.abspath(test),delimiter=",",comment="#")
     TICid = tble["tic_id"].astype(str)
 
     col_names = tble.columns.values.tolist()
