@@ -1,3 +1,3 @@
-import exomagpy.predictExo
-import exomagpy.download
 import exomagpy.get_lightcurves
+import exomagpy.download
+import exomagpy.predictExo
