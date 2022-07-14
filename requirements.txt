@@ -3,5 +3,3 @@ matplotlib
 pandas
 tensorflow
 lightkurve
-io
-warnings
