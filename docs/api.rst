@@ -1,13 +1,12 @@
-.. _exoplanet machine learning:
+.. _api:
 
-download(search)
+API
 ====================================
 
-Function to save a Lightkurve search object to a numpy image array. Returns numpy array of dtype uint8.
+.. toctree::
+    :titlesonly:
 
-search: a Lightkurve search object variable name, e.g.
-
-    search = lk.search_lightcurve(target,author,sector)
+    Exoplanet Prediction
 
 .. automodule:: exomagpy
     :members:
