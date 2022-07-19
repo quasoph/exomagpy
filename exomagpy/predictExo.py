@@ -116,13 +116,12 @@ def predictExo(train1,size1,train2,size2,test,testsize):
     Y = np.asarray(Y)
 
     tble = pd.read_csv(os.path.abspath(test),delimiter=",",comment="#")
-    TICid = tble["tic_id"].astype(str)
 
     col_names = tble.columns.values.tolist()
     if "tid" in col_names:
-        TICid = tble["tid"].astype(str)
+        TICid = tble["tid"].astype("category")
     elif "tic_id" in col_names:
-        TICid = tble["tic_id"].astype(str)
+        TICid = (tble["tic_id"].astype(str).str[4:]).astype("category")
     else:
         print("No TIC ID column found.")
     
@@ -141,6 +140,6 @@ def predictExo(train1,size1,train2,size2,test,testsize):
         plt.show()
 
         if val[i] == [1.0]:
-            print("Exoplanet candidate detected! ID: " + TICid[i])
+            print("Exoplanet candidate detected! ID: " + str(TICid[i]))
         elif val[i] == [0.0]:
-            print("No exoplanet detected. ID: " + TICid[i])
+            print("No exoplanet detected. ID: " + str(TICid[i]))
