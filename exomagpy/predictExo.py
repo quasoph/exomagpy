@@ -39,13 +39,14 @@ def download(search):
 
 def get_lightcurves(filename,length):
 
-    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#")
+    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#",chunksize=5)
+    tbl.__next__()
     
     colnames = tbl.columns.values.tolist()
     if "tid" in colnames:
-        TICs = tbl["tid"].astype(str)
+        TICs = tbl["tid"].astype("category")
     elif "tic_id" in colnames:
-        TICs = tbl["tic_id"].astype(str).str[4:]
+        TICs = (tbl["tic_id"].astype(str).str[4:]).astype("category")
     else:
         print("No TIC ID column found.")
 
@@ -55,7 +56,7 @@ def get_lightcurves(filename,length):
 
     def namegen():
         for x in range(0,length): # change upper bound as needed
-            yield TICs[x]
+            yield str(TICs[x])
         
     name = namegen()
     for i in name:
@@ -69,9 +70,42 @@ def get_lightcurves(filename,length):
         
     return pics, shape
 
+def get_lightcurves_kep(filename,length):
+
+    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#",chunksize=5)
+    tbl.__next__()
+    
+    colnames = tbl.columns.values.tolist()
+    if "kid" in colnames:
+        KICs = tbl["kid"].astype("category")
+    elif "kic_id" in colnames:
+        KICs = (tbl["kic_id"].astype(str).str[4:]).astype("category")
+    else:
+        print("No KIC ID column found.")
+
+    #print(np.shape(TICs))
+
+    pics = []
+
+    def namegen():
+        for x in range(0,length): # change upper bound as needed
+            yield str(KICs[x])
+        
+    name = namegen()
+    for i in name:
+        search = lk.search_lightcurve(target=("KIC " + i),author="Kepler")
+        pic = download(search)
+        
+        if pic is not None:
+            pics.append(pic)
+    
+    shape = int(len(pics))
+        
+    return pics, shape
+
 # CREATE TRAIN AND TEST DATASETS
 
-def predictExo(train1,size1,train2,size2,test,testsize):
+def tess(train1,size1,train2,size2,test,testsize):
 
     exotraindata, trainshape = get_lightcurves(train1,size1) # / 255 for the data
     noexotraindata, train2shape = get_lightcurves(train2,size2)
@@ -115,14 +149,15 @@ def predictExo(train1,size1,train2,size2,test,testsize):
     Y, testshape = get_lightcurves(test,testsize) # this returns an array of images!
     Y = np.asarray(Y)
 
-    tble = pd.read_csv(os.path.abspath(test),delimiter=",",comment="#")
-    TICid = tble["tic_id"].astype(str)
+    tble = pd.read_csv(os.path.abspath(test),delimiter=",",comment="#",chunksize=5)
+
+    tble.__next__()
 
     col_names = tble.columns.values.tolist()
     if "tid" in col_names:
-        TICid = tble["tid"].astype(str)
+        TICid = tble["tid"].astype("category")
     elif "tic_id" in col_names:
-        TICid = tble["tic_id"].astype(str)
+        TICid = (tble["tic_id"].astype(str).str[4:]).astype("category")
     else:
         print("No TIC ID column found.")
     
@@ -141,6 +176,81 @@ def predictExo(train1,size1,train2,size2,test,testsize):
         plt.show()
 
         if val[i] == [1.0]:
-            print("Exoplanet candidate detected! ID: " + TICid[i])
+            print("Exoplanet candidate detected! ID: " + str(TICid[i]))
         elif val[i] == [0.0]:
-            print("No exoplanet detected. ID: " + TICid[i])
+            print("No exoplanet detected. ID: " + str(TICid[i]))
+
+def kepler(train1,size1,train2,size2,test,testsize):
+
+    exotraindata, trainshape = get_lightcurves_kep(train1,size1) # / 255 for the data
+    noexotraindata, train2shape = get_lightcurves_kep(train2,size2)
+
+    exotraindata = np.asarray(exotraindata)
+    noexotraindata = np.asarray(noexotraindata)
+
+    print(exotraindata[0])
+
+    print(np.shape(exotraindata))
+
+    exolabels = np.ones(trainshape)
+    noexolabels = np.zeros(train2shape)
+
+    traindata = np.concatenate((exotraindata,noexotraindata))
+    trainlabels = np.concatenate((exolabels,noexolabels))
+
+    print("Train data shape is " + str(np.shape(traindata)))
+    traindata = tensorflow.reshape(traindata,[trainshape+train2shape,1,288,1728])
+
+    # NON-2D CNN MODEL
+
+    model = keras.Sequential([
+        keras.layers.Flatten(input_shape=(1,288,1728)),
+        keras.layers.Dense(16,activation="relu"),
+        keras.layers.Dense(16,activation="relu"),
+        keras.layers.Dense(1,activation="sigmoid")
+    ])
+
+    model.compile(optimizer="adam",loss="binary_crossentropy",metrics=["accuracy"])
+
+    # TRAIN DATA
+
+    model.fit(
+        traindata,
+        trainlabels,
+        batch_size = 8,
+        epochs = trainshape+train2shape,
+    )
+
+    Y, testshape = get_lightcurves_kep(test,testsize) # this returns an array of images!
+    Y = np.asarray(Y)
+
+    tble = pd.read_csv(os.path.abspath(test),delimiter=",",comment="#",chunksize=5)
+
+    tble.__next__()
+
+    col_names = tble.columns.values.tolist()
+    if "kid" in col_names:
+        KICid = tble["kid"].astype("category")
+    elif "kic_id" in col_names:
+        KICid = (tble["kic_id"].astype(str).str[4:]).astype("category")
+    else:
+        print("No KIC ID column found.")
+    
+    X = tensorflow.reshape(Y,[testshape,1,288,1728])
+    probability = model.predict(X)
+    val = np.round(probability).tolist()
+    
+    def fig_gen():
+        for x in range(0,len(val)):
+            yield x
+
+    figures = fig_gen()
+    for i in figures:
+        fig, ax = plt.subplots()
+        ax.imshow(Y[i],aspect=4,cmap="gray")
+        plt.show()
+
+        if val[i] == [1.0]:
+            print("Exoplanet candidate detected! ID: " + str(KICid[i]))
+        elif val[i] == [0.0]:
+            print("No exoplanet detected. ID: " + str(KICid[i]))

@@ -6,13 +6,21 @@
 Welcome to exomagpy's documentation!
 ==================================
 
+**exomagpy** is a Python package that uses machine learning to find exoplanet candidates.
+ It takes lightcurves from user-input datasets from the NASA Exoplanet Archives `<https://exoplanetarchive.ipac.caltech.edu/>`_
+and puts them through a binary classification neural network, making the task of searching for
+exoplanet candidates in fresh data *quick* and *easy*.
+
+.. note::
+   This project is under active development.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   exo_ml.rst
-   get_lightcurves.rst
-   dfunc.rst
+   installation.rst
+   tutorials.rst
+   api.rst
 
 
 Indices and tables
