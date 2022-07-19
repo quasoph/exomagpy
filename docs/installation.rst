@@ -11,7 +11,7 @@ To use exomagpy, install it in the console using pip:
 Requirements
 ------------------
 
-The required packages for exomagpy to run can be found here `<https://github.com/quasoph/exomagpy/blob/main/requirements.txt>`_.
+The required packages for exomagpy to run can be found on GitHub `here <https://github.com/quasoph/exomagpy/blob/main/requirements.txt>`_.
 
 .. automodule:: exomagpy
     :members:

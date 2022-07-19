@@ -1,12 +1,9 @@
 .. _api:
 
 API
-====================================
+===
 
-.. toctree::
-    :titlesonly:
+.. autosummary::
+    :toctree: generated
 
-    Exoplanet Prediction
-
-.. automodule:: exomagpy
-    :members:
+    exomagpy

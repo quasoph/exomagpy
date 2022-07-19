@@ -1,13 +1,18 @@
-.. _exoplanet machine learning:
+.. _tutorials:
 
-get_lightcurves(filename,length)
+Tutorials
 ====================================
 
-Function that creates a list of lightcurve images as numpy arrays, from a chosen dataset.
+.. predicting exoplanets:
 
-filename: filename or path to .csv dataset.
+Predicting exoplanets
+-------------------------
 
-length: number of datapoints from the file to take lightcurves from (cannot exceed the total number of datapoints).
+**exomagpy** can predict the existence of exoplanets around a target star for most TESS and Kepler targets.
+To predict exoplanet candidates, you can use the `exomagpy.predictExo.tess()` or `exomagpy.predictExo.kepler()` functions as below:
 
-.. automodule:: exomagpy
-    :members:
+.. code-block:: console
+    import exomagpy.predictExo
+
+    exomagpy.predictExo.tess(train1,size1,train2,size2,test,testsize)
+    exomagpy.predictExo.kepler(train1,size1,train2,size2,test,testsize)
