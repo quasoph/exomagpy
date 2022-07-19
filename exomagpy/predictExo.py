@@ -53,10 +53,13 @@ def get_lightcurves(filename,length):
 
     pics = []
 
-    for x in range(0,length): # change upper bound as needed
-        name = TICs[x]
+    def namegen():
+        for x in range(0,length): # change upper bound as needed
+            yield TICs[x]
         
-        search = lk.search_lightcurve(target=("TIC " + name),author="SPOC")
+    name = namegen()
+    for i in name:
+        search = lk.search_lightcurve(target=("TIC " + i),author="SPOC")
         pic = download(search)
         
         if pic is not None:
@@ -127,13 +130,17 @@ def predictExo(train1,size1,train2,size2,test,testsize):
     probability = model.predict(X)
     val = np.round(probability).tolist()
     
-    for x in range(0,len(val)):
-        
+    def fig_gen():
+        for x in range(0,len(val)):
+            yield x
+
+    figures = fig_gen()
+    for i in figures:
         fig, ax = plt.subplots()
-        ax.imshow(Y[x],aspect=4,cmap="gray")
+        ax.imshow(Y[i],aspect=4,cmap="gray")
         plt.show()
 
-        if val[x] == [1.0]:
-            print("Exoplanet candidate detected! ID: " + TICid[x])
-        elif val[x] == [0.0]:
-            print("No exoplanet detected. ID: " + TICid[x])
+        if val[i] == [1.0]:
+            print("Exoplanet candidate detected! ID: " + TICid[i])
+        elif val[i] == [0.0]:
+            print("No exoplanet detected. ID: " + TICid[i])
