@@ -3,6 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. |br| raw:: html
+
+   <br />
+
+.. image:: Exomagpy_logo.png
+   :width: 250px
+   :height: 250px
+   :align: center
+
 Welcome to exomagpy's documentation!
 ==================================
 
