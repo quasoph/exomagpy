@@ -43,9 +43,9 @@ def get_lightcurves(filename,length):
     
     colnames = tbl.columns.values.tolist()
     if "tid" in colnames:
-        TICs = tbl["tid"].astype(str)
+        TICs = tbl["tid"].astype("category")
     elif "tic_id" in colnames:
-        TICs = tbl["tic_id"].astype(str).str[4:]
+        TICs = (tbl["tic_id"].astype(str).str[4:]).astype("category")
     else:
         print("No TIC ID column found.")
 
