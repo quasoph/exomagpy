@@ -11,5 +11,5 @@ To predict exoplanet candidates, you can use the `exomagpy.predictExo.tess()` or
 
 .. code-block:: python
     import exomagpy.predictExo
-    exomagpy.predictExo.tess(train1,size1,train2,size2,test,testsize)
-    exomagpy.predictExo.kepler(train1,size1,train2,size2,test,testsize)
+    exomagpy.predictExo.tess()
+    exomagpy.predictExo.kepler()
