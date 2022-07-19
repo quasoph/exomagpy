@@ -3,8 +3,6 @@
 Tutorials
 ====================================
 
-.. predicting exoplanets:
-
 Predicting exoplanets
 -------------------------
 
