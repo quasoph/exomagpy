@@ -1,4 +1,4 @@
-<img src="https://github.com/quasoph/exomagpy/blob/main/Exomagpy_logo.png?raw=true" height="125" width="125" >
+<img src="https://github.com/quasoph/exomagpy/blob/main/docs/Exomagpy_logo.png?raw=true" height="125" width="125" >
 
 # exomagpy
 
