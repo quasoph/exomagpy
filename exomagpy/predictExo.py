@@ -55,7 +55,7 @@ def get_lightcurves(filename,length):
 
     def namegen():
         for x in range(0,length): # change upper bound as needed
-            yield TICs[x]
+            yield str(TICs[x])
         
     name = namegen()
     for i in name:
