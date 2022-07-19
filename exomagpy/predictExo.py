@@ -39,7 +39,8 @@ def download(search):
 
 def get_lightcurves(filename,length):
 
-    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#")
+    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#",chunksize=5)
+    tbl.__next__()
     
     colnames = tbl.columns.values.tolist()
     if "tid" in colnames:
@@ -115,7 +116,9 @@ def predictExo(train1,size1,train2,size2,test,testsize):
     Y, testshape = get_lightcurves(test,testsize) # this returns an array of images!
     Y = np.asarray(Y)
 
-    tble = pd.read_csv(os.path.abspath(test),delimiter=",",comment="#")
+    tble = pd.read_csv(os.path.abspath(test),delimiter=",",comment="#",chunksize=5)
+
+    tble.__next__()
 
     col_names = tble.columns.values.tolist()
     if "tid" in col_names:
