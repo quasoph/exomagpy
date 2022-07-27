@@ -11,97 +11,11 @@ import warnings
 
 from tensorflow import keras
 
+from .get_lightcurves import get_lightcurves_kep
+from .get_lightcurves import get_lightcurves_jwst
+from .get_lightcurves import get_lightcurves
+
 warnings.filterwarnings("ignore")
-
-# DOWNLOAD (& ADD TO BIG ARRAY)
-
-def download(search):
-
-    lc = search.download()
-    
-    if lc is not None:
-        
-        fig,ax = plt.subplots()
-        ax.scatter(lc.time.value.tolist(), lc.flux.value.tolist(),s=0.1, color='k')
-        ax.autoscale()
-        ax.set_xlabel('Time (BTJD)')
-        ax.set_ylabel('Flux')
-        plt.close(fig)
-        io_buf = io.BytesIO()
-        fig.savefig(io_buf,format="raw")
-        io_buf.seek(0)
-        img_arr = (np.frombuffer(io_buf.getvalue(),dtype=np.uint8)).reshape(288,-1)
-        io_buf.close()
-
-        return img_arr
-
-# GET ARRAY OF IMAGE ARRAYS FOR A FILE
-
-def get_lightcurves(filename,length):
-
-    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#",chunksize=5)
-    tbl.__next__()
-    
-    colnames = tbl.columns.values.tolist()
-    if "tid" in colnames:
-        TICs = tbl["tid"].astype("category")
-    elif "tic_id" in colnames:
-        TICs = (tbl["tic_id"].astype(str).str[4:]).astype("category")
-    else:
-        print("No TIC ID column found.")
-
-    #print(np.shape(TICs))
-
-    pics = []
-
-    def namegen():
-        for x in range(0,length): # change upper bound as needed
-            yield str(TICs[x])
-        
-    name = namegen()
-    for i in name:
-        search = lk.search_lightcurve(target=("TIC " + i),author="SPOC")
-        pic = download(search)
-        
-        if pic is not None:
-            pics.append(pic)
-    
-    shape = int(len(pics))
-        
-    return pics, shape
-
-def get_lightcurves_kep(filename,length):
-
-    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#",chunksize=5)
-    tbl.__next__()
-    
-    colnames = tbl.columns.values.tolist()
-    if "kid" in colnames:
-        KICs = tbl["kid"].astype("category")
-    elif "kic_id" in colnames:
-        KICs = (tbl["kic_id"].astype(str).str[4:]).astype("category")
-    else:
-        print("No KIC ID column found.")
-
-    #print(np.shape(TICs))
-
-    pics = []
-
-    def namegen():
-        for x in range(0,length): # change upper bound as needed
-            yield str(KICs[x])
-        
-    name = namegen()
-    for i in name:
-        search = lk.search_lightcurve(target=("KIC " + i),author="Kepler")
-        pic = download(search)
-        
-        if pic is not None:
-            pics.append(pic)
-    
-    shape = int(len(pics))
-        
-    return pics, shape
 
 # CREATE TRAIN AND TEST DATASETS
 
@@ -254,41 +168,6 @@ def kepler(train1,size1,train2,size2,test,testsize):
             print("Exoplanet candidate detected! ID: " + str(KICid[i]))
         elif val[i] == [0.0]:
             print("No exoplanet detected. ID: " + str(KICid[i]))
-
-def get_lightcurves_jwst(filename,length):
-
-    # EDIT THIS TO RETRIEVE LIGHTCURVES FROM MAST PORTAL
-
-    tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#",chunksize=5)
-    tbl.__next__()
-    
-    colnames = tbl.columns.values.tolist()
-    if "kid" in colnames:
-        KICs = tbl["kid"].astype("category")
-    elif "kic_id" in colnames:
-        KICs = (tbl["kic_id"].astype(str).str[4:]).astype("category")
-    else:
-        print("No KIC ID column found.")
-
-    #print(np.shape(TICs))
-
-    pics = []
-
-    def namegen():
-        for x in range(0,length): # change upper bound as needed
-            yield str(KICs[x])
-        
-    name = namegen()
-    for i in name:
-        search = lk.search_lightcurve(target=("KIC " + i),author="Kepler")
-        pic = download(search)
-        
-        if pic is not None:
-            pics.append(pic)
-    
-    shape = int(len(pics))
-        
-    return pics, shape
 
 # CREATE TRAIN AND TEST DATASETS
 

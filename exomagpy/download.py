@@ -1,15 +1,9 @@
 # IMPORTS
 
 import numpy as np
-import os
 import matplotlib.pyplot as plt
-import pandas as pd
-import tensorflow
-import lightkurve as lk
 import io
 import warnings
-
-from tensorflow import keras
 
 warnings.filterwarnings("ignore")
 
