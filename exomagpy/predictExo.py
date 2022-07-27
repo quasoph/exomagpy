@@ -17,7 +17,7 @@ from .get_lightcurves import get_lightcurves
 
 warnings.filterwarnings("ignore")
 
-# CREATE TRAIN AND TEST DATASETS
+# TESS PREDICT FUNCTION
 
 def tess(train1,size1,train2,size2,test,testsize):
 
@@ -94,6 +94,8 @@ def tess(train1,size1,train2,size2,test,testsize):
         elif val[i] == [0.0]:
             print("No exoplanet detected. ID: " + str(TICid[i]))
 
+# KEPLER PREDICT FUNCTION
+
 def kepler(train1,size1,train2,size2,test,testsize):
 
     exotraindata, trainshape = get_lightcurves_kep(train1,size1) # / 255 for the data
@@ -169,7 +171,7 @@ def kepler(train1,size1,train2,size2,test,testsize):
         elif val[i] == [0.0]:
             print("No exoplanet detected. ID: " + str(KICid[i]))
 
-# CREATE TRAIN AND TEST DATASETS
+# WEBB PREDICT FUNCTION (WORK IN PROGRESS)
 
 def jwst(train1,size1,train2,size2,test,testsize):
 
