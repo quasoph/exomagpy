@@ -11,3 +11,6 @@ sphinx:
 python:
   install:
     - requirements: requirements.txt
+
+dependencies:
+  - python=3.9
