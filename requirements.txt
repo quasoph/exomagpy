@@ -4,3 +4,4 @@ pandas
 tensorflow
 lightkurve
 requests
+sphinx==5.1.1
