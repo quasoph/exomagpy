@@ -74,7 +74,7 @@ def get_lightcurves_kep(filename,length):
 
 def get_lightcurves_jwst(filename,length):
 
-    # EDIT THIS TO RETRIEVE LIGHTCURVES FROM MAST PORTAL
+    # read jwst target names from csv file
 
     tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#",chunksize=5)
     tbl.__next__()
@@ -86,8 +86,6 @@ def get_lightcurves_jwst(filename,length):
         KICs = (tbl["kic_id"].astype(str).str[4:]).astype("category")
     else:
         print("No JWST ID column found.")
-
-    #print(np.shape(TICs))
 
     pics = []
 

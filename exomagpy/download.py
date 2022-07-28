@@ -32,7 +32,7 @@ def lc_to_array(search):
 
     else:
 
-        if search is not None:
+        if search is not None: # where "search" is the returned file from download_mast()
         
             fig,ax = plt.subplots()
 
