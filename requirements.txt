@@ -6,3 +6,4 @@ lightkurve
 requests
 sphinx==5.1.1
 sphinx_rtd_theme==1.0.0
+python>=3.8

@@ -10,6 +10,7 @@ Predicting exoplanets
 To predict exoplanet candidates, you can use the `exomagpy.predictExo.tess()` or `exomagpy.predictExo.kepler()` functions as below:
 
 .. code-block:: python
+    
     import exomagpy.predictExo
     exomagpy.predictExo.tess()
     exomagpy.predictExo.kepler()
