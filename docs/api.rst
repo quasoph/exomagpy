@@ -3,7 +3,3 @@
 API
 ===
 
-.. autosummary::
-    :toctree: generated
-
-    exomagpy
