@@ -13,7 +13,7 @@
    :align: center
 
 Welcome to exomagpy's documentation!
-==================================
+=======================================
 
 **exomagpy** is a Python package that uses machine learning to find exoplanet candidates.
  It takes lightcurves from user-input datasets from the `NASA Exoplanet Archives <https://exoplanetarchive.ipac.caltech.edu/>`_
@@ -33,7 +33,7 @@ exoplanet candidates in fresh data *quick* and *easy*.
 
 
 Indices and tables
-==================
+=====================
 
 * :ref:`genindex`
 * :ref:`modindex`
