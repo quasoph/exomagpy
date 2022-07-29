@@ -6,6 +6,7 @@ Installation
 To use exomagpy, install it in the console using pip:
 
 .. code-block:: console
+    
     (.venv) $ pip install exomagpy
 
 Requirements
