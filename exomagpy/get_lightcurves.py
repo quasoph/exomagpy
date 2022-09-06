@@ -99,7 +99,7 @@ def get_lightcurves_jwst(filename,length):
     name = namegen()
     for i in name:
         
-        search = download_mast(1,i) # downloads files from mast portal
+        search = download_mast(300,2000) # downloads files from mast portal, given row and column
         # search = mast_json2csv(search) # changes to csv file (UNNECESSARY)
         pic = lc_to_array(search) # converts to array
         
