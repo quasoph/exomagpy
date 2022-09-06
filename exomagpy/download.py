@@ -6,6 +6,7 @@ import io
 import warnings
 import requests
 import lightkurve as lk
+from astropy.io import fits
 
 warnings.filterwarnings("ignore")
 
@@ -52,16 +53,25 @@ def lc_to_array(search):
     
     return img_arr
 
-# DOWNLOAD MAST JSON FILE
+# DOWNLOAD MAST JSON FILE AND PLOT LIGHTCURVE
 
-def download_mast(payload,filename,download_type="file"):
-    request_url='https://mast.stsci.edu/api/v0.1/Download/' + download_type
-    resp = requests.post(request_url, data=payload)
- 
-    with open(filename,'wb') as FLE:
-        FLE.write(resp.content)
- 
-    return filename
+def download_mast(row,col):
+
+    hdu = fits.open("MiniDataset_calints.fits.gz")
+    flux = hdu["SCI"].data
+    unit = hdu["SCI"].header["BUNIT"]
+    median_img = np.median(flux,0) # only needed for pixel plot
+    pixel_lightcurve = flux[:,row,col]
+    time = hdu["INT_TIMES"].data["int_mid_BJD_TDB"]
+
+    # lightcurve plot
+
+    plt.plot(time, pixel_lightcurve, marker=".", color="black")
+    plt.xlabel('Time (BJD - 2400000.5)')
+    plt.ylabel(f'Pixel ({col}, {row}) Flux\n[in units of {unit}]')
+
+
+    return
 
 # CONVERT MAST JSON FILE TO CSV
 
