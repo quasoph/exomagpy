@@ -8,6 +8,7 @@ import warnings
 warnings.filterwarnings("ignore")
 from .download import download_mast, lc_to_array, mast_json2csv
 
+
 def get_lightcurves(filename,length):
 
     tbl = pd.read_csv(os.path.abspath(filename),delimiter=",",comment="#")
@@ -36,6 +37,7 @@ def get_lightcurves(filename,length):
     shape = int(len(pics))
         
     return pics, shape
+
 
 def get_lightcurves_kep(filename,length):
 
@@ -70,6 +72,7 @@ def get_lightcurves_kep(filename,length):
         
     return pics, shape
 
+
 # JWST GET LIGHTCURVES FUNCTION
 
 def get_lightcurves_jwst(filename,length):
@@ -97,7 +100,7 @@ def get_lightcurves_jwst(filename,length):
     for i in name:
         
         search = download_mast(1,i) # downloads files from mast portal
-        search = mast_json2csv(search) # changes to csv file
+        # search = mast_json2csv(search) # changes to csv file (UNNECESSARY)
         pic = lc_to_array(search) # converts to array
         
         if pic is not None:
