@@ -4,8 +4,7 @@
 
 `pip install exomagpy`
 
-Python package using machine learning to find exoplanet candidates. Exomagpy (EXOplanet MAchine learninG PYthon) plots and analyses lightcurves from user-selected datasets using a binary classification algorithm, allowing the program to predict the exoplanet status of any TESS or Kepler target. Looks at shiny things! .*-
-
+Python package using machine learning to find exoplanet candidates. Exomagpy (EXOplanet MAchine learninG PYthon) plots and analyses lightcurves from user-selected datasets using a binary classification algorithm, allowing the program to predict the exoplanet status of any TESS or Kepler target. Looks at shiny things!
 For documentation, see: https://exomagpy.readthedocs.io/en/latest/
 
 [![GitHub Release](https://github-basic-badges.herokuapp.com/release/quasoph/exomagpy.svg)]() [![Documentation Status](https://readthedocs.org/projects/exomagpy/badge/?version=latest)](https://exomagpy.readthedocs.io/en/latest/?badge=latest)
